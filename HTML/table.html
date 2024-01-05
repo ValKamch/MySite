@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<head>
+    <title>Tables Layout</title>
+    <style>
+        .price-list {
+            border: 1px solid gray;
+            border-collapse: collapse;
+        }
+
+        .price-list td, .price-list th {
+            border: 1px solid gray;
+            padding: 5px;
+        }
+
+        .price-list thead {
+            background-color: lightgray;
+        }
+
+        .price-list tfoot {
+            background-color: lightgreen;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+   <table class="price-list">
+        <thead>
+            <tr>
+            <th>#</th>
+            <th>Наименование</th>
+            <th>Стоимость</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Проектирование</td>
+                <td>4000</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Дизайн</td>
+                <td>12000</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Верстка</td>
+                <td>10000</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Программирование</td>
+                <td rowspan="2">7000</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Размещение</td>
+            </tr>
+        </tbody>
+        <tFoot>
+            <tr>
+                <td colspan="2">Общая стоимость</td>
+                <td>33000</td>
+            </tr>
+        </tFoot>
+   </table> 
+</body>
+</html>
