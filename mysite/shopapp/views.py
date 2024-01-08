@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 
 #from .forms import ProductForm, GroupForm
 from .models import Product, Order
@@ -48,7 +49,10 @@ class ProductsListView(ListView):
     queryset = Product.objects.filter(archived=False)
     
 
-class ProductCreateView(CreateView):  
+class ProductCreateView(UserPassesTestMixin, CreateView):  
+    def test_func(self):
+        # return self.request.user.groups.filter(name="secret-group").exits()
+        return self.request.user.is_superuser
     model = Product
 #Если указывать здесь поля, то класс в форме не нужен  
 #    form_class =  ProductForm     
@@ -79,7 +83,7 @@ class ProductDeleteView(DeleteView):
         return HttpResponseRedirect(success_url)
         
 
-class OrderListView(ListView):
+class OrderListView(LoginRequiredMixin, ListView):
     queryset = (
         Order.objects.select_related("user").prefetch_related("products").all()
     )
@@ -91,7 +95,8 @@ def orders_list(request: HttpRequest):
     }
     return render(request, 'shopapp/order-list.html', context=context)
 
-class OrderDetailView(DetailView):
+class OrderDetailView(PermissionRequiredMixin, DetailView):
+    permission_required = "shopapp.view_order"
     queryset = (
         Order.objects.select_related("user").prefetch_related("products").all()
     )
