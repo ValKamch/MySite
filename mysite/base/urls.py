@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('req/', include('requestdataapp.urls')),
     #path('myauth/', include('myauth.urls'))
+    path('api/', include('myapiapp.urls'))
 ]
 
 urlpatterns += i18n_patterns(
