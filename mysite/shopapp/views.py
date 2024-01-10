@@ -18,6 +18,7 @@ class ShopIndexView(View):
         ]
         context = {
             "products": products,
+            "items": 6,
         }
         return render(request, 'shopapp/shop-index.html', context=context)
 
