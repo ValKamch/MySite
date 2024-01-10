@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group
-from django.forms import ModelForm
+from django.forms import ModelForm, ImageField, ClearableFileInput
 
 #from django.core import validators
 
@@ -20,7 +20,11 @@ from .models import Product
 class ProductForm(ModelForm):
     class Meta:
         model = Product
-        fields = "name", "price", "description", "discount"
+        fields = "name", "price", "description", "discount", "preview"
+
+    image = ImageField(
+        widget=ClearableFileInput(attrs={"multiple": True})
+    )
   
 
 class GroupForm(ModelForm):

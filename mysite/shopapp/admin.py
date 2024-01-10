@@ -3,12 +3,15 @@ from django.contrib import admin
 from django.db.models import QuerySet
 from django.http.request import HttpRequest
 
-from .models import Product, Order
+from .models import Product, Order, ProductImage
 from .admin_mixin import ExportAsCSVMixin
 
 #В продуктах отображать в какие заказы входит
 class OrderInline(admin.StackedInline):
     model = Product.orders.through
+
+class ProductInline(admin.TabularInline):
+    model = ProductImage
 
 # Групповые действия
 @admin.action(description="Archive products")
@@ -28,6 +31,7 @@ class ProductAdmin(admin.ModelAdmin, ExportAsCSVMixin):
     ]
     inlines = [
         OrderInline,
+        ProductInline,
     ]
     #list_display = "pk", "name", "description", "price", "discount"
     list_display = "pk", "name", "description_short", "price", "discount", "archived"   #Что показываем
@@ -43,6 +47,9 @@ class ProductAdmin(admin.ModelAdmin, ExportAsCSVMixin):
 #            "classes": ("collapse",),                                      #Сворачивает группу полей
 #            "classes": ("wide",),                                           #Поля немного правее
             "classes": ("wide", "collapse"),                                #Можно совмещать
+        }),
+        ("Images", {
+            "fields": ("preview", ),
         }),
         ("Extra options", {
             "fields": ("archived",),

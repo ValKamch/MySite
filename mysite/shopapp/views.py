@@ -7,8 +7,8 @@ from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 
-#from .forms import ProductForm, GroupForm
-from .models import Product, Order
+from .forms import ProductForm, GroupForm
+from .models import Product, Order, ProductImage
 
 class ShopIndexView(View):
     def get(self, request: HttpRequest) -> HttpResponse: 
@@ -38,7 +38,8 @@ class GroupsListView(View):
         
 class ProductDetailView(DetailView):
     template_name = 'shopapp/product-detail.html'
-    model = Product
+#    model = Product
+    queryset = Product.objects.prefetch_related("images")
     context_object_name = 'product'
     
     
@@ -56,13 +57,14 @@ class ProductCreateView(UserPassesTestMixin, CreateView):
     model = Product
 #Если указывать здесь поля, то класс в форме не нужен  
 #    form_class =  ProductForm     
-    fields = "name", "price", "description", "discount"
+    fields = "name", "price", "description", "discount", "preview"
     success_url = reverse_lazy("shopapp:products_list")
 
 class ProductUpdateView(UpdateView):
     model = Product  
-    fields = "name", "price", "description", "discount"
+#    fields = "name", "price", "description", "discount", "preview"
     #template_name = "product_update_form"
+    form_class = ProductForm
     template_name_suffix = "_update_form"
 
     def get_success_url(self):
@@ -70,6 +72,17 @@ class ProductUpdateView(UpdateView):
             "shopapp:product_detail", 
             kwargs={"pk": self.object.pk},
         )
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        for image in form.files.getlist("images"):
+            ProductImage.objects.create(
+                product=self.object,
+                image=image,
+            )
+        return response          
+                         
+
 
 class ProductDeleteView(DeleteView):
     model = Product
