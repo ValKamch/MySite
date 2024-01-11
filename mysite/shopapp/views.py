@@ -1,11 +1,19 @@
-from typing import Any
+"""
+В этом модуле лежат различные наборы представлений.
+
+Разные view для интернет-магазина: по товарам, заказам и т.д.
+"""
+
+# from typing import Any
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.views.generic import (TemplateView, ListView, DetailView,
+                                  CreateView, UpdateView, DeleteView)
+from django.contrib.auth.mixins import (LoginRequiredMixin, PermissionRequiredMixin,
+                                        UserPassesTestMixin)
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -15,6 +23,10 @@ from .models import Product, Order, ProductImage
 from .serializers import ProductSerializer
 
 class ProductViewSet(ModelViewSet):
+    """
+    Набор представлений для действий над Product
+    Полный CRUD для сущностей товаров
+    """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [

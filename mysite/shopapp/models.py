@@ -9,6 +9,12 @@ def product_preview_directory_path(instance: "Product", filename: str) -> str:
     )
 
 class Product(models.Model):
+    """
+    Модель Product представляет товар,
+    который можно продовать в Интернет-магазине
+
+    Заказы тут: :model:`shopapp.Order`
+    """
     class Meta:
         ordering = ["name", "price"]
         #verbose_name_plural = "products"
