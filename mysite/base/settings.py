@@ -28,8 +28,24 @@ SECRET_KEY = 'django-insecure-h5d01=+e8m$9xlp8w4z3i_@*@*(+mx=de!ca_dh5r-*s*9o4y9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "0.0.0.0",
+    "127.0.0.1",
+]
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
+#if DEBUG:
+#    import socket
+#    test = socket.gethostname()
+#    print(test)
+#    hostname, _, ips = socket.gethostbyname_ex(test)
+#    print(hostname, ips)
+#     INTERNAL_IPS.append("10.0.2.2")
+#    INTERNAL_IPS.extend(
+#        [ip[: ip.rfind(".")] + ".1" for ip in ips]
+#    )
 
 # Application definition
 
@@ -42,11 +58,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.admindocs',
 
+    'debug_toolbar',
     'rest_framework',
     'django_filters',
     
     'shopapp.apps.ShopappConfig',
-    'requestdataapp.apps.RequestdataappConfig',
+    # 'requestdataapp.apps.RequestdataappConfig',
     'myauth.apps.MyauthConfig',
     'myapiapp.apps.MyapiappConfig',
 ]
@@ -59,10 +76,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'requestdataapp.middlewares.set_useragent_on_request_middleware',
-    'requestdataapp.middlewares.CountRequestsMiddleware',
+    # 'requestdataapp.middlewares.set_useragent_on_request_middleware',
+    # 'requestdataapp.middlewares.CountRequestsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.admindocs.middleware.XViewMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'base.urls'
@@ -155,34 +173,35 @@ LOGIN_REDIRECT_URL = reverse_lazy("myauth:about-me")
 
 LOGIN_URL = reverse_lazy("myauth:login")
 
-REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,
-    "DEFAULT_FILTER_BACKENDS": [
-        "django_filters.rest_framework.DjangoFilterBackend",
-    ]
-}
+LOGFILE_NAME = BASE_DIR / "log.txt"
+LOGFILE_SIZE = 400
+LOGFILE_COUNT = 3
 
 LOGGING = {
-    'version': 1,
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         },
     },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
         },
+        "logfile": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOGFILE_NAME,
+            "maxBytes": LOGFILE_SIZE,
+            "backupCount": LOGFILE_COUNT,
+            "formatter": "verbose",
+        }
     },
-    'loggers': {
-        'django.db.backends': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-        },
+    "root": {
+        "handlers": [
+            "console",
+            "logfile"],
+        "level": "INFO",
     },
 }
-
-

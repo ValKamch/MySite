@@ -5,10 +5,11 @@
 """
 
 # from typing import Any
+import logging
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.urls import reverse_lazy
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpRequest, HttpResponseRedirect, JsonResponse
 from django.views import View
 from django.views.generic import (TemplateView, ListView, DetailView,
                                   CreateView, UpdateView, DeleteView)
@@ -21,6 +22,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .forms import ProductForm, GroupForm
 from .models import Product, Order, ProductImage
 from .serializers import ProductSerializer
+
+log = logging.getLogger(__name__)
 
 class ProductViewSet(ModelViewSet):
     """
@@ -59,6 +62,8 @@ class ShopIndexView(View):
             "products": products,
             "items": 6,
         }
+        log.debug("Products for shop index: %s", products)
+        log.info("Rendering shop index")
         return render(request, 'shopapp/shop-index.html', context=context)
 
 class GroupsListView(View):
@@ -153,3 +158,20 @@ class OrderDetailView(PermissionRequiredMixin, DetailView):
     queryset = (
         Order.objects.select_related("user").prefetch_related("products").all()
     )
+
+class ProductsDataExportView(View):
+    def get(self, request: HttpRequest) -> JsonResponse:
+        products = Product.objects.order_by('pk').all()
+        products_data = [
+            {
+                "pk": product.pk,
+                "name": product.name,
+                "price": product.price,
+                "archived": product.archived,
+            }
+            for product in products
+        ]
+        elem = products_data[0]
+        name = elem["name"]
+        print("name:", name)
+        return JsonResponse({"products": products_data})

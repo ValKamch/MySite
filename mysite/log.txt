@@ -1,0 +1,5 @@
+2024-01-11 17:23:47,352 [INFO] django.utils.autoreload: Watching for file changes with StatReloader
+2024-01-11 17:24:20,267 [WARNING] django.request: Not Found: /
+2024-01-11 17:24:20,517 [WARNING] django.request: Not Found: /
+2024-01-12 17:59:52,760 [INFO] django.utils.autoreload: Watching for file changes with StatReloader
+2024-01-12 18:00:07,185 [WARNING] django.request: Not Found: /
