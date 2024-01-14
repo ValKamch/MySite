@@ -6,6 +6,9 @@
 
 # from typing import Any
 import logging
+
+from csv import DictWriter
+
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.urls import reverse_lazy
@@ -16,6 +19,8 @@ from django.views.generic import (TemplateView, ListView, DetailView,
 from django.contrib.auth.mixins import (LoginRequiredMixin, PermissionRequiredMixin,
                                         UserPassesTestMixin)
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
+from rest_framework.request import Request
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -51,6 +56,29 @@ class ProductViewSet(ModelViewSet):
         "discount",
     ]
 
+    @action(methods=["get"], detail=False)
+    def download_csv(self, request: Request):
+        response = HttpResponse(content_type="text/csv")
+        filename = "products-export.csv"
+        response["Content-Disposition"] = f"attachment; filename={filename}"
+        queryset = self.filter_queryset(self.get_queryset())
+        fields = [
+            "name",
+            "description",
+            "price",
+            "discount",
+        ]
+        queryset = queryset.only(*fields)
+        writer = DictWriter(response, fieldnames=fields)
+        writer.writeheader()
+
+        for product in queryset:
+            writer.writerow({
+                field: getattr(product, field)
+                for field in fields
+            })
+
+        return response
 
 class ShopIndexView(View):
     def get(self, request: HttpRequest) -> HttpResponse: 

@@ -2,15 +2,27 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.sitemaps.views import sitemap
 
 from django.conf.urls.i18n import i18n_patterns
+
+from .sitemaps import sitemaps
 
 urlpatterns = [
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls),
     path('req/', include('requestdataapp.urls')),
     #path('myauth/', include('myauth.urls'))
-    path('api/', include('myapiapp.urls'))
+    path('api/', include('myapiapp.urls')),
+    path('blog/', include('blogapp.urls')),
+
+    
+   path(
+       "sitemap.xml",
+       sitemap,
+       {"sitemaps": sitemaps},
+       name="django.contrib.sitemaps.views.sitemap",
+   ),
 ]
 
 urlpatterns += i18n_patterns(

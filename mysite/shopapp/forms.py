@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group
-from django.forms import ModelForm, ImageField, ClearableFileInput
+from django.forms import ModelForm, ImageField, ClearableFileInput, Form, FileField
 
 #from django.core import validators
 
@@ -31,3 +31,6 @@ class GroupForm(ModelForm):
     class Meta:
         model = Group
         fields = "name",
+
+class CSVImportForm(Form):
+    csv_file = FileField()
